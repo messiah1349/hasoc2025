@@ -1,16 +1,34 @@
 from PIL import Image
+import logging
 from src.gemini.gemini import GeminiCaller
-from src.common.constants import TRAIN_PATH, OUTPUT_PATH
+from src.common.constants import TRAIN_PATH, OUTPUT_PATH, BANGLA_TRAIN_IMAGES_PATH, BODO_TRAIN_IMAGES_PATH, HINDI_TRAIN_IMAGES_PATH, GUJARATI_TRAIN_IMAGES_PATH
+from src.common.logging import setup_logging
+
+
 
 def main():
-    train_images_pathes = [path for path in TRAIN_PATH.glob('*')]
-    train_ids = [image.name for image in train_images_pathes]
-    train_images = [Image.open(image_path) for image_path in train_images_pathes]
-    print(f"{train_images=}")
     gemini_caller = GeminiCaller()
-    response_df = gemini_caller.call_several_images(train_images, train_ids)
-    response_df.to_csv(OUTPUT_PATH / 'scores_5_test_screenshots.csv', index=False)
+
+    for train_images_path in [
+            BODO_TRAIN_IMAGES_PATH, 
+            HINDI_TRAIN_IMAGES_PATH, 
+            GUJARATI_TRAIN_IMAGES_PATH, 
+            BANGLA_TRAIN_IMAGES_PATH, 
+        ]:
+        output_file_name = train_images_path.name
+        logger.warning(f"language = {output_file_name}")
+        train_images_pathes = [path for path in train_images_path.glob('*')][:50]
+        train_ids = [image.name for image in train_images_pathes]
+        train_images = []
+        for image_path in train_images_pathes:
+            with Image.open(image_path) as img:
+                img.load()
+                train_images.append(img.copy())
+        response_df = gemini_caller.call_several_images(train_images, train_ids)
+        response_df.to_csv(OUTPUT_PATH / f'{output_file_name}_50_images.csv', index=False)
 
 
 if __name__ == "__main__":
+    setup_logging()
+    logger = logging.getLogger(__name__)
     main()

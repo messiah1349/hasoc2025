@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from src.common.constants import GEMINI_API_KEY, PROMPT
 from typing import Iterable, Literal
 import pandas as pd
+from tqdm import tqdm
 
 from google import genai
 
@@ -44,8 +45,12 @@ class GeminiCaller:
 
     def call_several_images(self, images: list[PILImage], ids: Iterable[str]) -> pd.DataFrame:
         responses = []
-        for image, id in zip(images, ids):
-            response = self.call(image).model_dump()
+        for image, id in tqdm(zip(images, ids)):
+            response = self.call(image)
+            try:
+                response = response.model_dump()
+            except AttributeError:
+                response = {}
             response['id'] = id
             responses.append(response)
         response_df = pd.DataFrame(responses)
