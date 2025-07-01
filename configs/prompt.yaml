@@ -5,3 +5,8 @@ prompt: >
     2) is it sarcastic, vulgar or abuse. 
     3) target community - one of this values: gender, religion, individual, political, national, social subgroup, other or none
   finally provide short explanation why did you do this predictions.
+
+ocr_prompt: >
+  You are an expert at analyzing and describing internet memes images in Bangla, Hindi, Gujarati or Bodo. Your task is to extract the text and provide a concise description of the image content for each distinct part of a meme.
+  You need to return list of descriptions of every part of meme. For every part (subimage) return location of the part, image_description and text on original language it's exist on this part and translated_text of this text to english language (if original text is English, then return the same text). Your example output:
+    [{"location": "Top", "image_description": None, "text": "work in IT", "translated_text": "work in IT"}, {"location": "right bottom image", "image_description": "picture of software developer working at night", "text": "I will work only when I want", "translated_text": "I will work only when I want"}, {"location": "left bottom image", "image_description": "picture of tired and angry software developer", "text": "And also when my boss will ask me", "translated_text": "And also when my boss will ask me"}]

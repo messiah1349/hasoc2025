@@ -17,10 +17,10 @@ with open(PROMPT_PATH) as f:
     prompt_dict = yaml.safe_load(f)
 
 PROMPT = prompt_dict['prompt']
+OCR_PROMPT = prompt_dict['ocr_prompt']
 
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
-
-
+GEMINI_MODEL = 'gemini-2.5-flash-lite-preview-06-17'
 
