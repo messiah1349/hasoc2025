@@ -14,7 +14,7 @@ from google import genai
 logger = logging.getLogger(__name__)
 
 class MemeLLMOutput(BaseModel):
-    sentiment: Literal['positive', 'Neutral', 'Negative']
+    sentiment: Literal['positive', 'neutral', 'negative']
     sarcasm: bool
     vulgar: bool
     abuse: bool
@@ -79,7 +79,7 @@ class GeminiCaller:
 
     def call_several_images(self, images: list[PILImage], ids: Iterable[str]) -> pd.DataFrame:
         responses = []
-        for image, id in tqdm(zip(images, ids)):
+        for image, id in tqdm(zip(images, ids), total=len(ids)):
             response = self.call(image)
             # logging.warning(f'{response=}')
             try:
