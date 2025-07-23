@@ -10,6 +10,8 @@ from tqdm import tqdm
 import logging
 
 from google import genai
+from google.genai.errors import ServerError
+
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +82,14 @@ class GeminiCaller:
     def call_several_images(self, images: list[PILImage], ids: Iterable[str]) -> pd.DataFrame:
         responses = []
         for image, id in tqdm(zip(images, ids), total=len(ids)):
-            response = self.call(image)
+            try:
+                response = self.call(image)
+            except ServerError as e:
+                logger.error(f"internal gemini server error appeared: {e}")
+                response = None
+            except Exception as e:
+                logger.error(f"unusual error appeared: {e}")
+                response = None
             # logging.warning(f'{response=}')
             try:
                 if isinstance(response, list):
@@ -88,9 +97,9 @@ class GeminiCaller:
                 else:
                     response = response.model_dump()
                 # logging.warning(f'{response=}')
-            except AttributeError:
+            except Exception as e:
                 response = {}
-                # logging.warning(f'{response=}')
+                logging.warning(f'error during response parse: {e}')
             response['id'] = id
             responses.append(response)
         response_df = self.response_to_df(responses)
