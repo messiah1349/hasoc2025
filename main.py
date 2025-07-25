@@ -34,7 +34,7 @@ def main():
     score_test_images_every_lang(
         gemini_caller,
         output_prefix='ocr_full_train',
-        image_folders=[BANGLA_TRAIN_IMAGES_PATH, BODO_TRAIN_IMAGES_PATH, GUJARATI_TRAIN_IMAGES_PATH, HINDI_TRAIN_IMAGES_PATH],
+        image_folders=[BODO_TRAIN_IMAGES_PATH, GUJARATI_TRAIN_IMAGES_PATH, HINDI_TRAIN_IMAGES_PATH, BANGLA_TRAIN_IMAGES_PATH],
         n=None,
     )
 

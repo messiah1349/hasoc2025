@@ -72,11 +72,12 @@ class GeminiCaller:
         elif self.return_type == 'ocr':
             output_items = []
             for response in responses:
-                items = response['items']
-                id = response['id']
-                for item in items:
-                    item['id'] = id
-                    output_items.append(item)
+                if 'items' in response and 'id' in response:
+                    items = response['items']
+                    id = response['id']
+                    for item in items:
+                        item['id'] = id
+                        output_items.append(item)
             return pd.DataFrame(output_items)
 
     def call_several_images(self, images: list[PILImage], ids: Iterable[str]) -> pd.DataFrame:
