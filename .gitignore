@@ -8,6 +8,7 @@ wheels/
 *.egg-info
 data/src/
 data/train/
+data/
 
 
 # Virtual environments

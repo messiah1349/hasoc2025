@@ -9,6 +9,7 @@ DATA_PATH = BASE_DIR / 'data'
 TRAIN_PATH = DATA_PATH / 'train'
 TEST_PATH = DATA_PATH / 'test'
 OUTPUT_PATH = DATA_PATH / 'output'
+MODELS_OUTPUT_PATH = OUTPUT_PATH / 'models'
 
 BANGLA_TRAIN_IMAGES_PATH = TRAIN_PATH / 'Bangla_train_2025' / 'Bangla_train_images' 
 BODO_TRAIN_IMAGES_PATH = TRAIN_PATH / 'Bodo_train_2025' / 'Bodo_train_images' 
