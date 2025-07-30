@@ -1,0 +1,3 @@
+from src.gemini.gemini_prepare_for_retriever import concat_ocr_files_by_language
+
+concat_ocr_files_by_language()

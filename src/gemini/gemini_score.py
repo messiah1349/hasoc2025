@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def score_top_n_images_per_folder(gemini_caller: GeminiCaller, image_folders: list[Path],
-                                            n: int|None=50, output_prefix: str='top_50') -> None:
+                                            n: int|None=50, output_prefix: str='top_50', filter_image_names: list[str]|None=None) -> None:
 
     if n is None:
         n = 1_000_000
@@ -19,6 +19,12 @@ def score_top_n_images_per_folder(gemini_caller: GeminiCaller, image_folders: li
         output_file_name = image_path.name
         logger.warning(f"path: {output_file_name}")
         train_images_pathes = [path for path in image_path.glob('*')][:n]
+        if filter_image_names:
+            logger.warning(f"images count before: {len(train_images_pathes)}")
+            logger.warning(train_images_pathes[0].name)
+            train_images_pathes = [path for path in train_images_pathes if path.name in filter_image_names]
+            logger.warning(f"images count after: {len(train_images_pathes)}")
+
         train_ids = [image.name for image in train_images_pathes]
         train_images = []
         for image_path in train_images_pathes:
