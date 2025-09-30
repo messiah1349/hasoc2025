@@ -26,9 +26,15 @@ with open(PROMPT_PATH) as f:
 
 PROMPT = prompt_dict['prompt']
 OCR_PROMPT = prompt_dict['ocr_prompt']
+PROMPT_FEW_SHOTS_TEMPLATE = prompt_dict['prompt_few_shots']
+DESCRIPTION_TEMPLATE = prompt_dict['description_template']
+DESCRIPTION_OCR_TEMPLATE = prompt_dict['description_ocr_template']
+EXAMPLE_TEMPLATE = prompt_dict['example_template']
 
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 GEMINI_MODEL = 'gemini-2.5-flash-lite-preview-06-17'
+GEMINI_EMBEDDINGS_MODEL = "models/embedding-001"
 
+CHROMA_STORAGE_PATH = BASE_DIR / 'storage' / 'chroma_embeddings'

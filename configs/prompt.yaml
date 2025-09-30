@@ -32,7 +32,7 @@ ocr_prompt: >
 
 prompt_few_shots: >
   You are helpfull content moderator you need to analyze meme image in Bangla, Hindi, Gujarati or Bodo. 
-  I will provide you description of every part of meme (images and texts)
+  I will provide you text extracted from the meme
   Your should detect:
     1) sentiment (one from 3 values):
       - positive - The meme conveys a supportive, humorous, or appreciative tone.

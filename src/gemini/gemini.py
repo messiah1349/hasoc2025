@@ -31,14 +31,8 @@ class TextAndImage(BaseModel):
     translated_text: str|None
 
 
-image_path = Path('/Users/evgenii/progs/competitions/hasoc2025/data/train/Screenshot 2025-06-24 at 19.51.55.png')
-image = Image.open(image_path)
-
-client = genai.Client(api_key=GEMINI_API_KEY)
-
-
 class GeminiCaller:
-    def __init__(self, model: str=GEMINI_MODEL, prompt: str=PROMPT, return_type: Literal['meme_output', 'ocr'] = 'meme_output'):
+    def __init__(self, model: str=GEMINI_MODEL, prompt: str=PROMPT, return_type: Literal['meme_output', 'ocr', 'fs_call'] = 'meme_output'):
         self.model: str=model
         self.client = genai.Client(api_key=GEMINI_API_KEY)
         self.return_type = return_type
@@ -55,7 +49,7 @@ class GeminiCaller:
     def _gemini_config(self) -> dict[str, Any]:
         return {
             "response_mime_type": "application/json",
-            "response_schema": MemeLLMOutput if self.return_type == 'meme_output' else list[TextAndImage],
+            "response_schema": list[TextAndImage] if self.return_type == 'ocr' else MemeLLMOutput,
         }
 
     def call(self, image: PILImage) -> MemeLLMOutput:
@@ -66,8 +60,16 @@ class GeminiCaller:
         )
         return response.parsed
 
+    def call_text(self, prompt: str) -> MemeLLMOutput:
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=[prompt],
+            config=self._gemini_config(),
+        )
+        return response.parsed
+
     def response_to_df(self, responses: list[dict[str, Any]]) -> pd.DataFrame:
-        if self.return_type == 'meme_output':
+        if self.return_type in ['meme_output', 'fs_call']:
             return  pd.DataFrame(responses)
         elif self.return_type == 'ocr':
             output_items = []
@@ -85,6 +87,34 @@ class GeminiCaller:
         for image, id in tqdm(zip(images, ids), total=len(ids)):
             try:
                 response = self.call(image)
+            except ServerError as e:
+                logger.error(f"internal gemini server error appeared: {e}")
+                response = None
+            except Exception as e:
+                logger.error(f"unusual error appeared: {e}")
+                response = None
+            # logging.warning(f'{response=}')
+            try:
+                if isinstance(response, list):
+                    response = {'items': [item.model_dump() for item in response]}
+                else:
+                    response = response.model_dump()
+                # logging.warning(f'{response=}')
+            except Exception as e:
+                response = {}
+                logging.warning(f'error during response parse: {e}')
+            response['id'] = id
+            responses.append(response)
+        response_df = self.response_to_df(responses)
+        return response_df
+
+    def call_fs_prompts(self, df: pd.DataFrame) -> pd.DataFrame:
+        prompts = df['few_shot_prompt'] 
+        ids = df['Ids']
+        responses = []
+        for prompt, id in tqdm(zip(prompts, ids), total=len(ids)):
+            try:
+                response = self.call_text(prompt)
             except ServerError as e:
                 logger.error(f"internal gemini server error appeared: {e}")
                 response = None
